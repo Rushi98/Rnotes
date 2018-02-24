@@ -6,11 +6,12 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import io.realm.Realm;
+
 /**
  * @author Rushikesh Jogdand.
  */
 
-@SuppressWarnings("WeakerAccess")
 public class NotesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
     private ImageButton archiveBtn;
@@ -53,11 +54,22 @@ public class NotesViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_archive: {
-                // TODO: archive the note
-            } break;
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                note.isArchived = true;
+                realm.copyToRealmOrUpdate(note);
+                realm.commitTransaction();
+                realm.close();
+            }
+            break;
             case R.id.btn_delete: {
-                // TODO: delete the note
-            } break;
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                realm.where(Note.class).equalTo("id", note.id).findAll().deleteAllFromRealm();
+                realm.commitTransaction();
+                realm.close();
+            }
+            break;
             default: {
                 showContent = !showContent;
                 if (showContent) contentTv.setVisibility(View.VISIBLE);
@@ -71,8 +83,7 @@ public class NotesViewHolder extends RecyclerView.ViewHolder implements View.OnC
         if (v.getId() == R.id.cv_item) {
             Intent intent = new Intent(self.getContext(), DetailsActivity.class);
             intent.setAction("editNote");
-            intent.putExtra("noteTitle", note.title);
-            intent.putExtra("noteContent", note.content);
+            intent.putExtra("id", note.id);
             self.getContext().startActivity(intent);
         }
         return false;
