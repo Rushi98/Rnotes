@@ -10,6 +10,9 @@ import java.sql.Date;
 import java.util.Calendar;
 import java.util.Objects;
 
+import io.realm.Realm;
+import io.realm.RealmObject;
+
 @SuppressWarnings("FieldCanBeLocal")
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -28,11 +31,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         bindViews();
         addListeners();
 
-        note = new Note();
         if (Objects.equals(getIntent().getAction(), "editNote")) {
             note.title = getIntent().getStringExtra("noteTitle");
             note.content = getIntent().getStringExtra("noteContent");
-        } else {
+        } else if (Objects.equals(getIntent().getAction(), "createNote")){
+            note = new Note();
+            note.id = Calendar.getInstance().getTimeInMillis() + "";
             note.title = "";
             note.content = "";
         }
@@ -60,7 +64,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             note.title = titleEt.getText().toString();
             note.content = contentEt.getText().toString();
             note.date = new Date(Calendar.getInstance().getTimeInMillis());
-            // TODO: Save the note
+            Realm db = Realm.getDefaultInstance(); /* Always, get database reference */
+            db.beginTransaction();  /* For update, insertion operations */
+            db.insertOrUpdate(note);
+            db.commitTransaction();     /* finalise the operation */
+            db.close();     /* close db reference */
             finish();
         }
     }
