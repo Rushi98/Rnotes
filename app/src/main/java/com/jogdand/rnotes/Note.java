@@ -12,6 +12,7 @@ import io.realm.annotations.PrimaryKey;
  * @author Rushikesh Jogdand.
  */
 
+@SuppressWarnings({"WeakerAccess", "NullableProblems"})
 public class Note extends RealmObject {
     @PrimaryKey
     public String id;
@@ -24,4 +25,6 @@ public class Note extends RealmObject {
 
     @NonNull
     public Date date;
+
+    public boolean isArchived = false;
 }

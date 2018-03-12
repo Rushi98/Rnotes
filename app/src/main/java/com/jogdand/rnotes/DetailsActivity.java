@@ -30,12 +30,13 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_details);
         bindViews();
         addListeners();
+        note = new Note();
 
         if (Objects.equals(getIntent().getAction(), "editNote")) {
             note.title = getIntent().getStringExtra("noteTitle");
             note.content = getIntent().getStringExtra("noteContent");
+            note.id = getIntent().getStringExtra("noteId");
         } else if (Objects.equals(getIntent().getAction(), "createNote")){
-            note = new Note();
             note.id = Calendar.getInstance().getTimeInMillis() + "";
             note.title = "";
             note.content = "";
@@ -64,6 +65,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             note.title = titleEt.getText().toString();
             note.content = contentEt.getText().toString();
             note.date = new Date(Calendar.getInstance().getTimeInMillis());
+            note.isArchived = false;
             Realm db = Realm.getDefaultInstance(); /* Always, get database reference */
             db.beginTransaction();  /* For update, insertion operations */
             db.insertOrUpdate(note);

@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import io.realm.Realm;
+
 /**
  * @author Rushikesh Jogdand.
  */
@@ -53,7 +55,12 @@ public class NotesViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_archive: {
-                // TODO: archive the note
+                note.isArchived = true;
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                realm.insertOrUpdate(note);
+                realm.commitTransaction();
+                realm.close();
             } break;
             case R.id.btn_delete: {
                 // TODO: delete the note
@@ -73,6 +80,7 @@ public class NotesViewHolder extends RecyclerView.ViewHolder implements View.OnC
             intent.setAction("editNote");
             intent.putExtra("noteTitle", note.title);
             intent.putExtra("noteContent", note.content);
+            intent.putExtra("noteId", note.id);
             self.getContext().startActivity(intent);
         }
         return false;
